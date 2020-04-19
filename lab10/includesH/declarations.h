@@ -16,7 +16,7 @@ typedef struct carlHead carHead;
 typedef struct carlNode carNode;
 typedef struct carStruct car;
 
-struct carStruct
+struct carStruct // Описание структуры из лаб работы 9
 {
     char *name;
     char *company;
@@ -27,15 +27,15 @@ struct carStruct
     int speed[1];
 };
 
-struct carlNode{
-    int id;
-    car *data;
-    carNode *next;
+struct carlNode{ // Описание структуры элемента списка
+    int id; // Id элемента
+    car *data; // Данные элемента
+    carNode *next; // Указатель на следующий элемент списка
 };
 
-struct carlHead
+struct carlHead // Описание структуры головы списка
 {
-    int count;
-    carNode *first;
-    carNode *last;
+    int count; // Количество элементов в списке
+    carNode *first; // Указатель на первый элемент в списке
+    carNode *last; // Указатель на последний элемент в списке
 };
