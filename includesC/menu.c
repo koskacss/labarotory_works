@@ -8,13 +8,9 @@ void menu(carHead *head)
         puts("\nMake your choice():");
         puts("\n1 - Insert before\n2 - Insert after\n3 - Delete element\n4 - Insert before the last\n5 - Initialise list\n0 - Exit");
         scanf("%hi" , &choice);
-        if(choice == 1) actions[0](head);
-        else if(choice == 2) actions[1](head);
-        else if(choice == 3) actions[2](head);
-        else if(choice == 4) actions[3](head);
-        else if(choice == 5) actions[4](head);
-        else if (choice == 0) puts("\nExiting...");
-        else {
+        if((choice >= 1) && (choice <= 5)){
+            actions[choice - 1](head);
+        } else {
             CLS;
             print_list(head);
             puts("\n==============Error!==============\n");
