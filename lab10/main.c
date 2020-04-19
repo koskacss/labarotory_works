@@ -7,9 +7,6 @@ int main()
 {
     FILE *fp;
     carHead *ph;
-    //void(*type[6])(carHead *head , carNode *cur_node , carNode *node);
-    //type[1] = insert_after;
-
     if((fp = fopen("data.csv", "r")) != NULL){
         ph = init_head();
         read_file(fp , ph);
