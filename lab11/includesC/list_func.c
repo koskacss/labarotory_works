@@ -57,6 +57,7 @@ carNode *get_node()
             new_node = NULL;
         }
         new_node->next = NULL;
+        new_node->prev = NULL;
     }
     return new_node;
 }
@@ -81,12 +82,13 @@ void insert_after(carHead *head)
                 if(tmp->next == NULL){
                     tmp->next = node;
                     head->last = node;
-                    node->next = NULL;
+                    node->prev = tmp;
                     node->id = head->count;
                 } else {
                     node->next = tmp->next;
                     node->id = tmp->id;
                     tmp->next = node;
+                    node->prev = tmp;
                 }
                 head->count++;
                 inc_id(head , node);
@@ -96,7 +98,7 @@ void insert_after(carHead *head)
     print_list(head);
 }
 
-void insert_before(carHead *head) // finish
+void insert_before(carHead *head)
 {
     int uid;
     carNode *node , *tmp;
@@ -110,15 +112,18 @@ void insert_before(carHead *head) // finish
                 CLS;
                 tmp = head->first;
                 if(tmp->id == uid){
+                    head->first->prev = node; 
                     node->next = head->first;
                     head->first = node;
                     node->id = 1;
                 } else {
                     while(tmp != NULL){
-                        if(tmp->next->id == uid){
-                            node->next = tmp->next;
-                            node->id = tmp->next->id;
-                            tmp->next = node;
+                        if(tmp->id == uid){
+                            node->next = tmp;
+                            node->id = tmp->id;
+                            node->prev = tmp->prev;
+                            tmp->prev->next = node;
+                            tmp->prev = node;
                             tmp = NULL;
                         } else tmp = tmp->next;
                     }
@@ -135,7 +140,6 @@ void delete_elem(carHead *head)
 {
     int uid;
     carNode *tmp , *tmp1;
-
     if(head){
         if(head->count != 0){
             puts("Enter the element`s id");
@@ -152,16 +156,16 @@ void delete_elem(carHead *head)
                     free_del(tmp);
                 } else {
                     while(tmp != NULL){
-                        if(tmp->next->id == uid){
-                            if(tmp->next->next != NULL){
-                                tmp1 = tmp->next->next;
-                                tmp->next->next->id = tmp->next->id;
-                                free_del(tmp->next);
-                                tmp->next = tmp1;
-                                dec_id(head , tmp->next->next);
+                        if(tmp->id == uid){
+                            if(head->last == tmp) {
+                                head->last = tmp->prev;
+                                head->last->next = NULL;
+                                free_del(tmp);
                             } else {
-                                free_del(tmp->next);
-                                tmp->next = NULL;
+                                tmp->prev->next = tmp->next;
+                                tmp->next->prev = tmp->prev;
+                                dec_id(head,tmp);
+                                free_del(tmp);
                             }
                             tmp = NULL;
                         } else tmp = tmp->next;
@@ -182,6 +186,7 @@ void insert_before_last(carHead *head)
         node = get_node();
         if(head->count == 0){
             head->first = node;
+            head->last = node;
             node->id = 1;
         } else {
             tmp = head->first;
@@ -189,17 +194,16 @@ void insert_before_last(carHead *head)
                 node->next = tmp;
                 node->id = 1;
                 head->first = node;
+                tmp->prev = head->first;
+                head->last = tmp;
                 inc_id(head,node->next);
             } else {
-                while(tmp != NULL){
-                    if(tmp->next->id == head->count){
-                        node->id = head->count;
-                        node->next = tmp->next;
-                        tmp->next = node;
-                        inc_id(head,node->next);
-                        tmp = NULL;
-                    } else tmp = tmp->next;
-                }
+                node->prev = head->last->prev;
+                head->last->prev->next = node;
+                head->last->prev = node;
+                node->next = head->last;
+                node->id = head->count;
+                inc_id(head,node->next);
             }
         }
         head->count++;
@@ -269,13 +273,9 @@ void print_list(carHead *head)
 void fill_from_file(carHead *head , carNode *cur_node , carNode *node)
 {
     if(head && cur_node && node){
-        if(cur_node->next == NULL){
-            cur_node->next = node;
-            head->last = node;
-        } else {
-            node->next = cur_node->next;
-            cur_node->next=node;
-        }
+        cur_node->next = node;
+        node->prev = cur_node;
+        head->last = node;
         head->count++;
     }
 }
